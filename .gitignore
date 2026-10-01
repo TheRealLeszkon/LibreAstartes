@@ -1,0 +1,26 @@
+# Java / Maven
+backend/target/
+*.class
+*.jar
+!**/.mvn/wrapper/maven-wrapper.jar
+
+# Node / Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Logs
+*.log
+
+# Neo4j data (compose-managed volume lives in Docker, not the repo)
+neo4j-data/
+
+# Raw image dump (source material); the app uses the converted copies in
+# frontend/public/assets/ which ARE tracked.
+media/
