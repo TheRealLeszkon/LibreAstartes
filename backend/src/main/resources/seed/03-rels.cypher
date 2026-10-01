@@ -223,3 +223,26 @@ MERGE (a)-[:MENTOR_OF]->(b);
 // ---- PART_OF : event -> event ----------------------------------------------
 MATCH (a {id: 'boarding-vengeful-spirit'}), (b {id: 'siege-of-terra'})
 MERGE (a)-[:PART_OF]->(b);
+
+// ---- Additional / corrected connections ------------------------------------
+// The Censure at Monarchia: the Emperor had Guilliman's Ultramarines raze
+// Lorgar's perfect city and made the Word Bearers kneel in its ashes.
+MATCH (l {id: 'ultramarines'}), (e {id: 'censure-at-monarchia'})
+MERGE (l)-[r:FOUGHT_IN]->(e) SET r.side = 'imperial';
+
+UNWIND [
+  ['roboute-guilliman','triumph-at-ullanor','imperial','Honoured among the primarchs'],
+  ['roboute-guilliman','censure-at-monarchia','imperial','Razed Monarchia at the Emperor\'s command'],
+  ['roboute-guilliman','battle-of-calth','loyalist','Lord of Ultramar'],
+  ['mortarion','isstvan-iii','traitor','Purged his own loyal sons'],
+  ['mortarion','siege-of-terra','traitor','Warlord of the Death Guard'],
+  ['angron','isstvan-iii','traitor','Led the red slaughter'],
+  ['alpharius','isstvan-v','traitor','Among the reserve that turned']
+] AS p
+MATCH (c {id: p[0]}), (e {id: p[1]})
+MERGE (c)-[r:PARTICIPATED_IN]->(e) SET r.side = p[2], r.role = p[3];
+
+// The humiliation at Monarchia set Lorgar against Guilliman for all time — a
+// hatred that later fell upon Ultramar at Calth.
+MATCH (a {id: 'lorgar'}), (b {id: 'roboute-guilliman'})
+MERGE (a)-[:RIVAL_OF]->(b);
