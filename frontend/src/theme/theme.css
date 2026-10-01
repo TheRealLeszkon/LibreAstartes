@@ -1,0 +1,108 @@
+/* ============================================================
+   Liber Astartes — grimdark gothic theme.
+   Palette and ornaments as CSS variables; no hard-coded colours
+   in components. Respects prefers-reduced-motion.
+   ============================================================ */
+:root {
+  /* Palette */
+  --near-black: #0b0a09;
+  --charcoal: #1a1714;
+  --charcoal-2: #221d18;
+  --aged-gold: #c9a227;
+  --pale-gold: #e6c86e;
+  --parchment: #e8dcc0;
+  --parchment-dim: #c7b998;
+  --blood: #7a0f0f;
+  --blood-bright: #a81a1a;
+  --verdigris: #3f6f63;
+
+  --ink: #0b0a09;
+  --text: #e8dcc0;
+  --text-dim: #a99b7d;
+  --border-gold: rgba(201, 162, 39, 0.55);
+  --border-faint: rgba(201, 162, 39, 0.22);
+
+  --bg-panel: rgba(16, 13, 11, 0.94);
+  --shadow-deep: 0 18px 50px rgba(0, 0, 0, 0.6);
+
+  --font-head: "Cinzel", "Cinzel Decorative", Georgia, serif;
+  --font-body: "Cormorant Garamond", "IM Fell English", Georgia, serif;
+
+  --rail-w: 300px;
+  --panel-w: 400px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(1200px 800px at 70% -10%, rgba(201, 162, 39, 0.06), transparent 60%),
+    radial-gradient(900px 700px at -10% 110%, rgba(122, 15, 15, 0.08), transparent 55%),
+    var(--near-black);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Candle-lit vignette + faint grain overlay, drawn with CSS/SVG only. */
+#root::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background:
+    radial-gradient(130% 110% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  mix-blend-mode: multiply;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-head);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+a {
+  color: var(--pale-gold);
+  cursor: pointer;
+}
+
+button {
+  font-family: var(--font-head);
+  cursor: pointer;
+}
+
+/* Thin gilded scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--charcoal);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--aged-gold), #6f5a16);
+  border-radius: 6px;
+  border: 2px solid var(--charcoal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
