@@ -3,6 +3,7 @@ import { api } from "./api/client";
 import type { FilterOptions, GraphResponse, NodeDetails } from "./api/types";
 import GraphView from "./graph/GraphView";
 import DetailsPanel from "./panel/DetailsPanel";
+import Lightbox from "./panel/Lightbox";
 import LegionsTab from "./legions/LegionsTab";
 import FilterRail from "./filters/FilterRail";
 import { useUrlState } from "./filters/useUrlState";
@@ -43,6 +44,7 @@ export default function App() {
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [layoutNonce, setLayoutNonce] = useState(0);
   const [railCollapsed, setRailCollapsed] = useState(false);
+  const [lightbox, setLightbox] = useState<{ src: string; caption: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const detailReq = useRef(0);
 
@@ -188,6 +190,7 @@ export default function App() {
           onClose={closeNode}
           onNavigate={selectNode}
           onExpand={onExpand}
+          onViewImage={(src, caption) => setLightbox({ src, caption })}
         />
 
         <FilterRail
@@ -199,6 +202,10 @@ export default function App() {
           onToggleCollapse={() => setRailCollapsed((c) => !c)}
           legionLocked={tab === "legions" && Boolean(legionId)}
         />
+
+        {lightbox && (
+          <Lightbox src={lightbox.src} caption={lightbox.caption} onClose={() => setLightbox(null)} />
+        )}
       </main>
     </div>
   );

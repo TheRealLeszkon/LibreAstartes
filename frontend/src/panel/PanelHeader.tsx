@@ -5,6 +5,7 @@ import Medallion from "./Medallion";
 interface PanelHeaderProps {
   details: NodeDetails;
   onNavigate: (id: string) => void;
+  onViewImage?: (src: string, caption: string) => void;
 }
 
 /**
@@ -14,7 +15,7 @@ interface PanelHeaderProps {
  * `public/assets/<id>.jpg` (character or event) and it appears with no code change.
  * Only user-supplied images are ever loaded — no artwork is fetched or embedded.
  */
-export default function PanelHeader({ details, onNavigate }: PanelHeaderProps) {
+export default function PanelHeader({ details, onNavigate, onViewImage }: PanelHeaderProps) {
   const node = details.node;
   const candidates = [node.image ? `/${node.image}` : null, `/assets/${node.id}.jpg`].filter(
     (s): s is string => Boolean(s),
@@ -43,9 +44,14 @@ export default function PanelHeader({ details, onNavigate }: PanelHeaderProps) {
   );
 
   if (hasBanner) {
+    const zoomable = Boolean(onViewImage);
     return (
       <header className="panel-header has-banner">
-        <div className="panel-banner">
+        <div
+          className={zoomable ? "panel-banner zoomable" : "panel-banner"}
+          onClick={zoomable ? () => onViewImage!(src, node.name) : undefined}
+        >
+          {zoomable && <span className="banner-expand">⤢ expand</span>}
           <img src={src} alt={node.name} onError={() => setIdx((i) => i + 1)} />
           <div className="banner-fade" />
         </div>

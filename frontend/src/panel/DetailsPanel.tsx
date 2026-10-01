@@ -8,6 +8,7 @@ interface DetailsPanelProps {
   onClose: () => void;
   onNavigate: (id: string) => void;
   onExpand: () => void;
+  onViewImage?: (src: string, caption: string) => void;
 }
 
 /** A clickable related name. */
@@ -31,7 +32,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default function DetailsPanel({ details, loading, open, onClose, onNavigate, onExpand }: DetailsPanelProps) {
+export default function DetailsPanel({ details, loading, open, onClose, onNavigate, onExpand, onViewImage }: DetailsPanelProps) {
   const node = details?.node;
 
   return (
@@ -44,7 +45,7 @@ export default function DetailsPanel({ details, loading, open, onClose, onNaviga
 
       {node && (
         <div className="panel-scroll">
-          <PanelHeader details={details!} onNavigate={onNavigate} />
+          <PanelHeader details={details!} onNavigate={onNavigate} onViewImage={onViewImage} />
 
           {node.description && (
             <Section title="Codex Entry">
