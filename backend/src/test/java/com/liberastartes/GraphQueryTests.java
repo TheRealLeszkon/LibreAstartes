@@ -66,7 +66,8 @@ class GraphQueryTests {
             if (count > 0) {
                 return;
             }
-            for (String file : List.of("seed/01-constraints.cypher", "seed/02-nodes.cypher", "seed/03-rels.cypher")) {
+            for (String file : List.of("seed/01-constraints.cypher", "seed/02-nodes.cypher",
+                    "seed/03-rels.cypher", "seed/04-expansion.cypher")) {
                 String script = new String(new ClassPathResource(file).getInputStream().readAllBytes(),
                         StandardCharsets.UTF_8);
                 for (String statement : CypherScript.split(script)) {
@@ -93,7 +94,7 @@ class GraphQueryTests {
     void seedLoadsExpectedCounts() {
         assertThat(count("MATCH (p:Primarch)-[:SON_OF]->(:Emperor) RETURN count(p) AS c")).isEqualTo(18);
         assertThat(count("MATCH (l:Legion) RETURN count(l) AS c")).isEqualTo(20);
-        assertThat(count("MATCH (n) RETURN count(n) AS c")).isEqualTo(87);
+        assertThat(count("MATCH (n) RETURN count(n) AS c")).isEqualTo(113);
         // Every Primarch commands exactly one Legion.
         assertThat(count("""
                 MATCH (p:Primarch) OPTIONAL MATCH (p)-[r:PRIMARCH_OF]->()
@@ -106,7 +107,7 @@ class GraphQueryTests {
     @Test
     void defaultGraphExcludesAllegianceNodes() {
         GraphResponse g = graphService.graph(filters(null, null, null, null));
-        assertThat(g.nodes()).hasSize(85);
+        assertThat(g.nodes()).hasSize(111);
         assertThat(types(g)).doesNotContain("Allegiance");
         assertThat(g.edges()).isNotEmpty();
     }
@@ -121,8 +122,8 @@ class GraphQueryTests {
     @Test
     void filterByAllegianceTraitorReturnsTraitorsOnly() {
         GraphResponse g = graphService.graph(filters(null, "traitor", null, null));
-        // 9 traitor primarchs + 12 traitor astartes + 9 traitor legions.
-        assertThat(g.nodes()).hasSize(30);
+        // 9 traitor primarchs + 26 traitor astartes + 9 traitor legions.
+        assertThat(g.nodes()).hasSize(44);
     }
 
     @Test

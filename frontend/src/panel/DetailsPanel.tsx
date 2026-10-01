@@ -1,5 +1,5 @@
 import type { NodeDetails, RelatedRef } from "../api/types";
-import Medallion from "./Medallion";
+import PanelHeader from "./PanelHeader";
 
 interface DetailsPanelProps {
   details: NodeDetails | null;
@@ -44,26 +44,7 @@ export default function DetailsPanel({ details, loading, open, onClose, onNaviga
 
       {node && (
         <div className="panel-scroll">
-          <header className="panel-header">
-            <Medallion
-              name={node.name}
-              numeral={details?.legion?.numeral ?? node.numeral}
-              primaryColor={details?.legion?.primaryColor ?? node.primaryColor}
-              secondaryColor={details?.legion?.secondaryColor ?? node.secondaryColor}
-              image={node.image}
-            />
-            <div className="panel-title">
-              <span className="type-badge">{node.type}</span>
-              <h2>{node.name}</h2>
-              {node.subtitle && <p className="subtitle">{node.subtitle}</p>}
-              {details?.legion && node.type !== "Legion" && (
-                <p className="of-legion">
-                  of the <button className="ref inline" onClick={() => onNavigate(details.legion!.id)}>{details.legion.name}</button>
-                </p>
-              )}
-              {node.homeworld && <p className="of-legion">Homeworld · {node.homeworld}</p>}
-            </div>
-          </header>
+          <PanelHeader details={details!} onNavigate={onNavigate} />
 
           {node.description && (
             <Section title="Codex Entry">

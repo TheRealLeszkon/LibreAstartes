@@ -70,8 +70,10 @@ by `SeedRunner`, but only when the database is empty:
 - `02-nodes.cypher` — `MERGE` each node on `id`, then `SET` properties
 - `03-rels.cypher` — match endpoints by `id`, then `MERGE` each relationship
 
-Current seed: 87 nodes (1 Emperor, 18 Primarchs, 20 Legions, 25 Astartes, 3 Dreadnoughts,
-5 Chaos powers, 13 Events, 2 Allegiances) and 250 relationships.
+Current seed: 113 nodes (1 Emperor, 18 Primarchs, 20 Legions, 51 Astartes, 3 Dreadnoughts,
+5 Chaos powers, 13 Events, 2 Allegiances) and 342 relationships. `04-expansion.cypher` adds a
+further roster of notable Heresy figures — captains, equerries, librarians and more loyalists
+serving inside traitor Legions (Macer Varren, Tylos Rubio, Corswain, …).
 
 ## API
 
@@ -204,6 +206,12 @@ RETURN [n IN nodes(p) | n.name] AS chain;
 - **Legions** tab: a heraldic muster of the Emperor and 20 Legions; click a Legion for its
   filtered subgraph. (Drop a `frontend/public/assets/primarchs-group.jpg` in and map faces
   with the editor at `?editHotspots=1` to use a group portrait instead.)
+- **Imagery**: a node's details panel shows a portrait banner if an image is available,
+  otherwise an original medallion. Drop a file at `frontend/public/assets/<id>.jpg` (the node's
+  slug — a character *or* an event, e.g. `horus-lupercal.jpg`, `isstvan-v.jpg`) and it appears
+  automatically, falling back gracefully if absent. Only images you place there are ever loaded —
+  no artwork is fetched or embedded (see the IP rules in `CLAUDE.md`).
+- **Legend** (bottom-left of any graph): what every node shape and bond style means.
 - **Filters** (right rail, on both tabs): node types, allegiance, legions, chaos powers,
   events, a name search that highlights and focuses matches, and a "neighbourhood of selected"
   depth toggle. All state lives in the URL, so any view is shareable — e.g.
