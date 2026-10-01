@@ -192,8 +192,9 @@ export function prepareElements(graph: GraphResponse): ElementDefinition[] {
 
     const bg = fillFor(data);
     const border = borderFor(data);
-    const hasImage = Boolean(data.image);
-    const fg = hasImage ? "#f4ecd5" : data.type === "Event" ? "#201204" : textColorFor(bg);
+    // Portraits live in the details panel, not on the node, so text colour is
+    // chosen purely for contrast against the node fill.
+    const fg = data.type === "Event" ? "#201204" : textColorFor(bg);
 
     return {
       data: {
@@ -207,8 +208,6 @@ export function prepareElements(graph: GraphResponse): ElementDefinition[] {
         h,
         tw: spec.maxTextW,
         fontSize: spec.fontSize,
-        hasImage: hasImage ? 1 : 0,
-        imageUrl: data.image ? `/${data.image}` : undefined,
       },
     };
   });

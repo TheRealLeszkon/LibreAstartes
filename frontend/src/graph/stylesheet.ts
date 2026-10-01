@@ -30,20 +30,6 @@ export const stylesheet: Style[] = [
       "overlay-opacity": 0,
     },
   },
-  // Portraits: image fill with a strong text halo so the label stays legible.
-  {
-    selector: "node[hasImage = 1]",
-    style: {
-      "background-image": "data(imageUrl)",
-      "background-fit": "cover",
-      "background-image-opacity": 0.92,
-      "text-outline-color": "#0b0a09",
-      "text-outline-width": 2.4,
-      "text-valign": "bottom",
-      "text-margin-y": -8,
-    },
-  },
-
   /* ---- shapes per type ---- */
   { selector: "node[type = 'Emperor']", style: { shape: "octagon", "shadow-blur": 40, "shadow-color": "#e6c86e", "shadow-opacity": 0.5, "shadow-offset-x": 0, "shadow-offset-y": 0 } },
   { selector: "node[type = 'Primarch']", style: { shape: "hexagon" } },

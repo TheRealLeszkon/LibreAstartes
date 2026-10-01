@@ -10,6 +10,7 @@ import { prepareElements } from "./sizing";
 import { stylesheet } from "./stylesheet";
 import { fcoseLayout } from "./layout";
 import { useFontsReady } from "./useFontsReady";
+import Legend from "./Legend";
 
 cytoscape.use(fcose);
 
@@ -34,7 +35,6 @@ export default function GraphView({
 }: GraphViewProps) {
   const fontsReady = useFontsReady();
   const cyRef = useRef<Core | null>(null);
-  const initialised = useRef(false);
 
   // Keep the latest callbacks in refs so listeners are registered only once.
   const onSelectRef = useRef(onSelectNode);
@@ -115,10 +115,13 @@ export default function GraphView({
     }
   }, [search, elementsKey]);
 
+  // Bind listeners per cy *instance*. react-cytoscapejs calls this on every
+  // render (same instance -> no-op), but StrictMode and element churn can create
+  // a fresh instance; if we bound only once, taps would be lost on the new one.
   const registerCy = (cy: Core) => {
+    if (cyRef.current === cy) return;
     cyRef.current = cy;
-    if (initialised.current) return;
-    initialised.current = true;
+    if (import.meta.env.DEV) (window as unknown as { __cy?: Core }).__cy = cy;
 
     cy.on("tap", "node", (e) => onSelectRef.current?.(e.target.id()));
     cy.on("tap", (e) => {
@@ -145,6 +148,7 @@ export default function GraphView({
         wheelSensitivity={0.2}
         style={{ width: "100%", height: "100%" }}
       />
+      <Legend />
     </div>
   );
 }
