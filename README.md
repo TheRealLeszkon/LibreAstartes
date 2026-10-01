@@ -73,6 +73,56 @@ by `SeedRunner`, but only when the database is empty:
 Current seed: 87 nodes (1 Emperor, 18 Primarchs, 20 Legions, 25 Astartes, 3 Dreadnoughts,
 5 Chaos powers, 13 Events, 2 Allegiances) and 250 relationships.
 
+## API
+
+All read endpoints return JSON. Graph endpoints return **Cytoscape-ready elements**
+(`{ "data": { ... } }` per node/edge); all filtering happens in Cypher on the server, using
+bound parameters. Node `data` carries `id, type, name, subtitle` plus style fields
+(`legionId, primaryColor, secondaryColor, numeral, expunged, color, kind, image, order`).
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/graph?types=&allegiance=&legions=&gods=&events=&q=` | Filtered graph |
+| `GET /api/graph/legion/{legionId}?…same filters` | Legion subgraph (Primarch, members, dreadnoughts, events, chaos powers, allegiance, + the Emperor) |
+| `GET /api/nodes/{id}` | Full details + relationships grouped (allegiance, devotion, events, kills, deaths, members, primarch, connections) |
+| `GET /api/nodes/{id}/neighbours?depth=1` | Neighbourhood (depth 1–2) as a graph |
+| `GET /api/meta/filters` | Option lists for the filter UI (types, legions, gods, events) |
+| `POST/PUT/DELETE /api/characters` | Character CRUD (phase 7) |
+
+Filter params accept comma-separated or repeated values. `types` defaults to everything except
+`Allegiance` (hidden by default to reduce hub clutter); pass `types=...,Allegiance` to include it.
+
+```bash
+# Whole graph (Allegiance nodes hidden by default)
+curl 'http://localhost:8080/api/graph'
+# Only the Legions
+curl 'http://localhost:8080/api/graph?types=Legion'
+# Everything on the traitor side
+curl 'http://localhost:8080/api/graph?allegiance=traitor'
+# The Sons of Horus neighbourhood
+curl 'http://localhost:8080/api/graph?legions=sons-of-horus'
+# Search by name
+curl 'http://localhost:8080/api/graph?q=horus'
+# A legion subgraph (includes the Emperor)
+curl 'http://localhost:8080/api/graph/legion/sons-of-horus'
+# Full node details
+curl 'http://localhost:8080/api/nodes/horus-lupercal'
+# Neighbours for "expand connections"
+curl 'http://localhost:8080/api/nodes/horus-lupercal/neighbours?depth=1'
+# Filter option lists
+curl 'http://localhost:8080/api/meta/filters'
+```
+
+### Tests
+
+```bash
+cd backend && ./mvnw test   # @DataNeo4jTest + Testcontainers Neo4j
+```
+
+Tests spin up a real Neo4j, load the seed, and assert the seed counts, each filter
+(type / allegiance / legion / search), the legion subgraph (Emperor included) and node details
+(relationship grouping + chronological event ordering).
+
 ## Verifying the data
 
 ```bash
