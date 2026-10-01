@@ -1,0 +1,221 @@
+/* Details panel — slides in from the LEFT. */
+.details-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--panel-w);
+  max-width: 92vw;
+  background: var(--bg-panel);
+  border-right: 2px solid var(--border-gold);
+  box-shadow: var(--shadow-deep);
+  transform: translateX(-102%);
+  transition: transform 0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+}
+.details-panel.open {
+  transform: translateX(0);
+}
+/* Gilded filigree seam on the right edge */
+.details-panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -1px;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(var(--pale-gold), transparent 15%, transparent 85%, var(--pale-gold));
+  opacity: 0.6;
+}
+
+.panel-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 2;
+  background: transparent;
+  color: var(--pale-gold);
+  border: 1px solid var(--border-faint);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+.panel-close:hover {
+  background: var(--blood);
+  border-color: var(--pale-gold);
+  color: var(--parchment);
+}
+
+.panel-loading {
+  padding: 40px 24px;
+  font-style: italic;
+  color: var(--text-dim);
+}
+
+.panel-scroll {
+  overflow-y: auto;
+  padding: 22px 24px 40px;
+}
+
+.panel-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-faint);
+}
+.medallion {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 18px rgba(201, 162, 39, 0.25);
+}
+.medallion--image {
+  border: 3px solid var(--aged-gold);
+}
+.medallion--image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.panel-title {
+  min-width: 0;
+}
+.type-badge {
+  display: inline-block;
+  font-family: var(--font-head);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: linear-gradient(var(--pale-gold), var(--aged-gold));
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+.panel-title h2 {
+  font-family: "Cinzel Decorative", var(--font-head);
+  color: var(--pale-gold);
+  font-size: 24px;
+  margin: 8px 0 2px;
+  line-height: 1.1;
+}
+.subtitle {
+  margin: 0;
+  color: var(--parchment-dim);
+  font-style: italic;
+  font-size: 16px;
+}
+.of-legion {
+  margin: 4px 0 0;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+/* Sections */
+.panel-section {
+  margin-top: 20px;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-head);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--aged-gold);
+  margin-bottom: 8px;
+}
+.section-rule {
+  width: 16px;
+  height: 10px;
+  flex: 0 0 auto;
+  background: var(--aged-gold);
+  clip-path: polygon(0 50%, 50% 0, 100% 50%, 50% 100%);
+  opacity: 0.8;
+}
+.body {
+  margin: 0 0 8px;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.lore-note {
+  font-style: italic;
+  color: var(--parchment-dim);
+  border-left: 2px solid var(--verdigris);
+  padding-left: 12px;
+}
+
+.rel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rel-list li {
+  padding: 3px 0;
+  font-size: 16px;
+  border-bottom: 1px dotted rgba(201, 162, 39, 0.14);
+}
+.meta,
+.degree,
+.relation {
+  color: var(--text-dim);
+  font-size: 14px;
+  font-style: italic;
+}
+.relation {
+  text-transform: capitalize;
+}
+
+.ref-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ref {
+  background: transparent;
+  border: 1px solid var(--border-faint);
+  color: var(--pale-gold);
+  border-radius: 2px;
+  padding: 3px 8px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  transition: all 0.15s ease;
+}
+.ref:hover {
+  border-color: var(--pale-gold);
+  background: rgba(201, 162, 39, 0.12);
+}
+.ref.inline {
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--border-faint);
+}
+
+.expand-btn {
+  margin-top: 26px;
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(180deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.06));
+  color: var(--pale-gold);
+  border: 1px solid var(--border-gold);
+  border-radius: 3px;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+.expand-btn:hover {
+  background: linear-gradient(180deg, rgba(201, 162, 39, 0.35), rgba(201, 162, 39, 0.12));
+  box-shadow: 0 0 16px rgba(201, 162, 39, 0.25);
+}
