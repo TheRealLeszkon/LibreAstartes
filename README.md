@@ -113,10 +113,31 @@ curl 'http://localhost:8080/api/nodes/horus-lupercal/neighbours?depth=1'
 curl 'http://localhost:8080/api/meta/filters'
 ```
 
+### Character CRUD (phase 7)
+
+`type` is the subtype label and is validated against a whitelist
+(`Astartes`, `Dreadnought`, `Primarch`, `Emperor`); `legionId`/`role` optionally
+attach a `MEMBER_OF` relationship. The id is the given `id` or a slug of the name.
+
+```bash
+# Create (201) — returns the new node's details
+curl -X POST http://localhost:8080/api/characters -H 'Content-Type: application/json' \
+  -d '{"name":"Verdane Kol","type":"Astartes","subtitle":"Sergeant",
+       "description":"…","legionId":"sons-of-horus","role":"Sergeant"}'
+# Update (200)
+curl -X PUT http://localhost:8080/api/characters/verdane-kol -H 'Content-Type: application/json' \
+  -d '{"name":"Verdane Kol","type":"Astartes","subtitle":"Veteran Sergeant"}'
+# Delete (204)
+curl -X DELETE http://localhost:8080/api/characters/verdane-kol
+```
+
+Validation: missing `name`/`type` → `400`; unknown `type` → `400`;
+duplicate id → `409`; update/delete of a missing id → `404`.
+
 ### Tests
 
 ```bash
-cd backend && ./mvnw test   # @DataNeo4jTest + Testcontainers Neo4j
+cd backend && ./mvnw test   # @DataNeo4jTest + Testcontainers Neo4j (15 tests)
 ```
 
 Tests spin up a real Neo4j, load the seed, and assert the seed counts, each filter
@@ -143,3 +164,47 @@ WITH p, count(r) AS c RETURN c, count(p);
 // The two Expunged Legions are intentionally standalone
 MATCH (n) WHERE NOT (n)--() RETURN labels(n), n.id;
 ```
+
+## Example Cypher queries
+
+Practising Cypher is a goal of this project — all filtering happens in the database.
+
+```cypher
+// Loyalists serving inside a Traitor Legion (e.g. Garviel Loken)
+MATCH (c:Character)-[:MEMBER_OF]->(l:Legion)-[:SIDED_WITH]->(:Allegiance {id:'traitor'})
+MATCH (c)-[:SIDED_WITH]->(:Allegiance {id:'loyalist'})
+RETURN c.name AS loyalist, l.name AS legion;
+
+// Who killed whom, and where
+MATCH (a:Character)-[k:KILLED]->(b:Character)
+RETURN a.name AS slayer, b.name AS slain, k.event AS event;
+
+// Every participant at the Dropsite Massacre, by side
+MATCH (c:Character)-[p:PARTICIPATED_IN]->(:Event {id:'isstvan-v'})
+RETURN p.side AS side, collect(c.name) AS warriors ORDER BY side;
+
+// Legions sworn to each Chaos power
+MATCH (l:Legion)-[d:DEVOTED_TO]->(g:ChaosGod)
+RETURN g.name AS power, d.degree AS degree, collect(l.name) AS legions;
+
+// The Siege of Terra and everything folded into it
+MATCH (e:Event)-[:PART_OF]->(:Event {id:'siege-of-terra'})
+RETURN e.name;
+
+// Shortest path of allegiance/bonds between two primarchs
+MATCH p = shortestPath(
+  (:Primarch {id:'horus-lupercal'})-[:ALLY_OF|RIVAL_OF|SON_OF*..6]-(:Primarch {id:'rogal-dorn'}))
+RETURN [n IN nodes(p) | n.name] AS chain;
+```
+
+## Using the app
+
+- **Codex Graph** tab: the whole setting as an interactive graph. Click any node to open
+  its codex entry (panel slides in from the left); click related names to navigate.
+- **Legions** tab: a heraldic muster of the Emperor and 20 Legions; click a Legion for its
+  filtered subgraph. (Drop a `frontend/public/assets/primarchs-group.jpg` in and map faces
+  with the editor at `?editHotspots=1` to use a group portrait instead.)
+- **Filters** (right rail, on both tabs): node types, allegiance, legions, chaos powers,
+  events, a name search that highlights and focuses matches, and a "neighbourhood of selected"
+  depth toggle. All state lives in the URL, so any view is shareable — e.g.
+  `/?allegiance=traitor`, `/?legion=sons-of-horus`, `/?node=horus-lupercal`.
