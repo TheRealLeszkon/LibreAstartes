@@ -5,8 +5,13 @@ export type NodeType =
   | "Primarch"
   | "Astartes"
   | "Dreadnought"
+  | "Custodes"
+  | "SistersOfSilence"
+  | "Mechanicum"
+  | "Imperialis"
   | "Legion"
   | "ChaosGod"
+  | "Daemon"
   | "Event"
   | "Allegiance";
 
@@ -36,6 +41,7 @@ export interface ApiEdgeData {
   type: string;
   role?: string;
   side?: string;
+  presence?: string;
   degree?: string;
   event?: string;
 }
@@ -51,6 +57,7 @@ export interface RelatedRef {
   type: NodeType;
   role?: string;
   side?: string;
+  presence?: string;
   order?: number;
   degree?: string;
   event?: string;

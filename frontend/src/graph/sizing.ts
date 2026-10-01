@@ -9,6 +9,12 @@ const PARCHMENT = "#e8dcc0";
 const CHARCOAL = "#241f19";
 const BLOOD = "#7a0f0f";
 const VERDIGRIS = "#3f6f63";
+// New factions.
+const CUSTODES_GOLD = "#b8902a";
+const SILVER = "#9ba3ab";
+const MECH_RUST = "#8a4a2b";
+const FIELD_GREY = "#5a5e52";
+const WARP_MAGENTA = "#6a1f4a";
 
 function hexToRgb(hex: string): [number, number, number] {
   let h = hex.replace("#", "").trim();
@@ -69,6 +75,14 @@ const SPEC: Record<NodeType, TypeSpec> = {
   Primarch: { fontSize: 13, maxTextW: 142, padX: 24, padY: 20, wFactor: 1.3, hFactor: 1.22, minW: 124, minH: 100 },
   Astartes: { fontSize: 12, maxTextW: 152, padX: 20, padY: 14, wFactor: 1.05, hFactor: 1.1, minW: 100, minH: 54 },
   Dreadnought: { fontSize: 12, maxTextW: 140, padX: 22, padY: 16, wFactor: 1.2, hFactor: 1.16, minW: 112, minH: 70 },
+  // Pentagon tapers at the top — inflate height so the first line clears the point.
+  Custodes: { fontSize: 12, maxTextW: 146, padX: 22, padY: 18, wFactor: 1.26, hFactor: 1.34, minW: 116, minH: 92 },
+  // Rhomboid shears sideways — inflate width so the corners don't bite the text.
+  SistersOfSilence: { fontSize: 12, maxTextW: 150, padX: 24, padY: 14, wFactor: 1.3, hFactor: 1.12, minW: 112, minH: 58 },
+  Mechanicum: { fontSize: 12, maxTextW: 148, padX: 22, padY: 15, wFactor: 1.12, hFactor: 1.14, minW: 108, minH: 60 },
+  Imperialis: { fontSize: 12, maxTextW: 152, padX: 20, padY: 13, wFactor: 1.05, hFactor: 1.08, minW: 100, minH: 52 },
+  // Star is deeply concave — needs the same generous inset as Event/ChaosGod.
+  Daemon: { fontSize: 12, maxTextW: 118, padX: 24, padY: 20, wFactor: 1.62, hFactor: 1.62, minW: 122, minH: 118 },
   Legion: { fontSize: 13, maxTextW: 150, padX: 24, padY: 22, wFactor: 1.18, hFactor: 1.55, minW: 124, minH: 128 },
   ChaosGod: { fontSize: 13, maxTextW: 120, padX: 24, padY: 20, wFactor: 1.4, hFactor: 1.4, minW: 120, minH: 112 },
   Event: { fontSize: 12, maxTextW: 132, padX: 22, padY: 18, wFactor: 1.58, hFactor: 1.58, minW: 120, minH: 120 },
@@ -125,10 +139,20 @@ export function fillFor(d: ApiNodeData): string {
       return d.primaryColor ?? CHARCOAL;
     case "Dreadnought":
       return shade(d.primaryColor ?? CHARCOAL, -0.35);
+    case "Custodes":
+      return CUSTODES_GOLD;
+    case "SistersOfSilence":
+      return SILVER;
+    case "Mechanicum":
+      return MECH_RUST;
+    case "Imperialis":
+      return FIELD_GREY;
     case "Legion":
       return d.expunged ? "#262321" : d.primaryColor ?? CHARCOAL;
     case "ChaosGod":
       return d.color ?? "#3a2a4a";
+    case "Daemon":
+      return d.color ?? WARP_MAGENTA;
     case "Event":
       return PARCHMENT;
     case "Allegiance":
@@ -148,10 +172,20 @@ function borderFor(d: ApiNodeData): { color: string; width: number } {
       return { color: d.secondaryColor ?? GOLD, width: 1.6 };
     case "Dreadnought":
       return { color: d.secondaryColor ?? "#0a0a0a", width: 4.5 };
+    case "Custodes":
+      return { color: PALE_GOLD, width: 3 };
+    case "SistersOfSilence":
+      return { color: "#e3e7ea", width: 2 };
+    case "Mechanicum":
+      return { color: "#d08a3a", width: 2.5 };
+    case "Imperialis":
+      return { color: shade(GOLD, -0.1), width: 1.6 };
     case "Legion":
       return { color: d.expunged ? BLOOD : d.secondaryColor ?? GOLD, width: 3 };
     case "ChaosGod":
       return { color: shade(d.color ?? "#3a2a4a", 0.3), width: 2.5 };
+    case "Daemon":
+      return { color: shade(d.color ?? WARP_MAGENTA, 0.35), width: 2.5 };
     case "Event":
       return { color: "#6b4f2a", width: 2 };
     case "Allegiance":

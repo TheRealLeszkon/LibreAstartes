@@ -17,6 +17,21 @@ function Glyph({ shape, fill, stroke }: { shape: string; fill: string; stroke: s
     case "barrel":
       node = <path d="M5,8 Q18,3 31,8 L31,22 Q18,27 5,22 Z" {...common} />;
       break;
+    case "pentagon":
+      node = <polygon points="18,2 33,13 27,28 9,28 3,13" {...common} />;
+      break;
+    case "rhomboid":
+      node = <polygon points="9,7 33,7 27,23 3,23" {...common} />;
+      break;
+    case "cut-rectangle":
+      node = <polygon points="7,7 29,7 33,11 33,19 29,23 7,23 3,19 3,11" {...common} />;
+      break;
+    case "rectangle":
+      node = <rect x="3" y="7" width="30" height="16" {...common} />;
+      break;
+    case "star":
+      node = <polygon points="18,2 22,12 33,12 24,18 28,28 18,21 8,28 12,18 3,12 14,12" {...common} />;
+      break;
     case "shield":
       node = <polygon points="5,3 31,3 31,15 24,24 18,27 12,24 5,15" {...common} />;
       break;
@@ -44,8 +59,13 @@ const NODE_LEGEND = [
   { shape: "hexagon", fill: "#2f5d50", stroke: "#c9a227", label: "Primarch", desc: "In legion colours, gold border" },
   { shape: "round-rectangle", fill: "#11407a", stroke: "#c9a227", label: "Astartes", desc: "Named legionary" },
   { shape: "barrel", fill: "#16181a", stroke: "#6a6f75", label: "Dreadnought", desc: "Interred ancient" },
+  { shape: "pentagon", fill: "#b8902a", stroke: "#e6c86e", label: "Custodes", desc: "Golden guardians" },
+  { shape: "rhomboid", fill: "#9ba3ab", stroke: "#e3e7ea", label: "Silent Sisters", desc: "Null-maidens" },
+  { shape: "cut-rectangle", fill: "#8a4a2b", stroke: "#d08a3a", label: "Mechanicum", desc: "Priests of Mars" },
+  { shape: "rectangle", fill: "#5a5e52", stroke: "#c9a227", label: "Imperialis", desc: "Humans & perpetuals" },
   { shape: "shield", fill: "#6e1414", stroke: "#c9a227", label: "Legion", desc: "Numeral + name" },
   { shape: "concave", fill: "#3a2a4a", stroke: "#7a4fa0", label: "Chaos Power", desc: "Warp-glow" },
+  { shape: "star", fill: "#6a1f4a", stroke: "#b0308a", label: "Daemon", desc: "Neverborn of the warp" },
   { shape: "diamond", fill: "#e8dcc0", stroke: "#6b4f2a", label: "Event", desc: "Battle or council" },
   { shape: "tag", fill: "#7a0f0f", stroke: "#c9a227", label: "Allegiance", desc: "Hidden by default" },
 ];
@@ -55,6 +75,7 @@ const EDGE_LEGEND = [
   { color: "#a81a1a", dash: "", label: "Killed", desc: "slayer → slain" },
   { color: "#7a4fa0", dash: "5,4", label: "Devoted to", desc: "sworn / influenced" },
   { color: "#3f6f63", dash: "2,4", label: "Sided with", desc: "allegiance" },
+  { color: "rgba(201,162,39,0.5)", dash: "6,4", label: "Involved from afar", desc: "strategic / supporting / vision" },
 ];
 
 export default function Legend() {

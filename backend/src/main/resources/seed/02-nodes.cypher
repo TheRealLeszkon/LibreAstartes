@@ -412,8 +412,29 @@ MERGE (n:Event {id: 'thramas-crusade'})
 MERGE (n:Event {id: 'siege-of-terra'})
   SET n.name = 'Siege of Terra', n.subtitle = 'The final battle', n.order = 12,
       n.era = 'Heresy', n.location = 'Terra',
-      n.description = 'The culminating assault of the Heresy, as Horus hurled his traitor Legions against the Imperial Palace in a battle that would decide the fate of humanity.';
+      n.description = 'The culminating assault of the Heresy, as Horus hurled his traitor Legions against the Imperial Palace in a battle that would decide the fate of humanity. It was fought over many months in distinct phases, each a war in itself.';
+// ---- Siege of Terra — phase sub-events (each PART_OF siege-of-terra) --------
+MERGE (n:Event {id: 'solar-war'})
+  SET n.name = 'The Solar War', n.subtitle = 'The gates of the Solar System', n.order = 13,
+      n.era = 'Heresy', n.location = 'Sol System',
+      n.description = 'The opening phase of the Siege, a vast void war fought across the Solar System as the traitor armada broke through the outer defences to reach Terra itself.';
+MERGE (n:Event {id: 'lions-gate'})
+  SET n.name = 'Battle of the Lion\'s Gate', n.subtitle = 'The spaceport falls', n.order = 14,
+      n.era = 'Heresy', n.location = 'Lion\'s Gate Spaceport, Terra',
+      n.description = 'The traitors seized the colossal Lion\'s Gate spaceport, opening a landing-ground through which the bulk of the besieging host could pour onto the surface of Terra.';
+MERGE (n:Event {id: 'saturnine'})
+  SET n.name = 'The Saturnine Assault', n.subtitle = 'A wall given up to win the war', n.order = 15,
+      n.era = 'Heresy', n.location = 'Saturnine Gate, Terra',
+      n.description = 'A ferocious assault on the walls in which Dorn chose where to let the enemy believe they had broken through, trading a bastion to annihilate the traitors\' finest storm-troops.';
+MERGE (n:Event {id: 'eternity-gate'})
+  SET n.name = 'Battle at the Eternity Gate', n.subtitle = 'The last threshold', n.order = 16,
+      n.era = 'Heresy', n.location = 'Eternity Gate, Inner Palace, Terra',
+      n.description = 'The desperate defence of the final gateway to the Sanctum Imperialis, where loyalist champions and the Custodes held against the full fury of the traitor assault.';
+MERGE (n:Event {id: 'inner-palace'})
+  SET n.name = 'The Inner Palace', n.subtitle = 'The breaking of the shield', n.order = 17,
+      n.era = 'Heresy', n.location = 'Inner Palace, Terra',
+      n.description = 'The final battles within the Imperial Palace as Horus lowered the void shields and dared the Emperor aboard his flagship, drawing the war to its ruinous conclusion.';
 MERGE (n:Event {id: 'boarding-vengeful-spirit'})
-  SET n.name = 'Boarding of the Vengeful Spirit', n.subtitle = 'Father against son', n.order = 13,
+  SET n.name = 'Boarding of the Vengeful Spirit', n.subtitle = 'Father against son', n.order = 18,
       n.era = 'Heresy', n.location = 'Vengeful Spirit, above Terra',
       n.description = 'The Emperor teleported aboard Horus\'s flagship for the final confrontation. Sanguinius fell, and the Emperor at last struck down his favourite son at ruinous cost.';

@@ -95,6 +95,7 @@ public class GraphService {
               type: type(r),
               role: r.role,
               side: r.side,
+              presence: r.presence,
               degree: r.degree,
               event: r.event
             } AS data

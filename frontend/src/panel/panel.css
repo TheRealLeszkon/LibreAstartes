@@ -280,6 +280,19 @@
 .relation {
   text-transform: capitalize;
 }
+/* Non-physical participation (strategic, supporting, vision…) — a quiet pill. */
+.presence-tag {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  border-radius: 10px;
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
 
 .ref-row {
   display: flex;

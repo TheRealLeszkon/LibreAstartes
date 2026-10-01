@@ -53,7 +53,8 @@ class CharacterCrudTests {
             long count = session.run("MATCH (n) RETURN count(n) AS c").single().get("c").asLong();
             if (count == 0) {
                 for (String file : List.of("seed/01-constraints.cypher", "seed/02-nodes.cypher",
-                        "seed/03-rels.cypher", "seed/04-expansion.cypher")) {
+                        "seed/03-rels.cypher", "seed/04-expansion.cypher",
+                        "seed/05-cast.cypher", "seed/06-participation.cypher")) {
                     String script = new String(new ClassPathResource(file).getInputStream().readAllBytes(), StandardCharsets.UTF_8);
                     for (String stmt : CypherScript.split(script)) {
                         session.run(stmt).consume();

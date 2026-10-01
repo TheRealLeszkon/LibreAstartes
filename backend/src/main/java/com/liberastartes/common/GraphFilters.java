@@ -20,7 +20,8 @@ public record GraphFilters(
     /** Node types shown by default — everything except Allegiance (hub clutter). */
     public static final List<String> DEFAULT_TYPES = List.of(
             "Emperor", "Primarch", "Astartes", "Dreadnought",
-            "Legion", "ChaosGod", "Event");
+            "Custodes", "SistersOfSilence", "Mechanicum", "Imperialis",
+            "Legion", "ChaosGod", "Daemon", "Event");
 
     /**
      * Build the Cypher parameter map. Empty collections and blank strings become

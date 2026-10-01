@@ -5,8 +5,13 @@ export const DEFAULT_TYPES = [
   "Primarch",
   "Astartes",
   "Dreadnought",
+  "Custodes",
+  "SistersOfSilence",
+  "Mechanicum",
+  "Imperialis",
   "Legion",
   "ChaosGod",
+  "Daemon",
   "Event",
 ] as const;
 

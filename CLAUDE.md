@@ -14,9 +14,13 @@ A learning project for building apps on Neo4j. The full build spec is in `docs/b
 - Query the DB: `docker exec -it neo4j cypher-shell -u neo4j -p <password>`
 
 ## Data model (source of truth)
-Labels: `Character` + one of `Emperor|Primarch|Astartes|Dreadnought`; `Legion`, `ChaosGod`, `Event`, `Allegiance`.
+Labels: `Character` + one of `Emperor|Primarch|Astartes|Dreadnought|Custodes|SistersOfSilence|Mechanicum|Imperialis`;
+standalone `Legion`, `ChaosGod`, `Daemon`, `Event`, `Allegiance`.
+(`Imperialis` = humans/perpetuals; `Daemon` = Neverborn, a peer of `ChaosGod`, carries no `Character` label.)
 Rels: `SON_OF`, `PRIMARCH_OF`, `MEMBER_OF{role}`, `SIDED_WITH`, `DEVOTED_TO{degree}`,
-`PARTICIPATED_IN{side,role}`, `FOUGHT_IN{side}`, `KILLED{event}`, `RIVAL_OF|ALLY_OF|MENTOR_OF`, `PART_OF`.
+`PARTICIPATED_IN{side,role,presence}`, `FOUGHT_IN{side}`, `KILLED{event}`, `RIVAL_OF|ALLY_OF|MENTOR_OF`, `PART_OF`.
+`presence` ∈ `physical|supporting|strategic|psychic|vision|aftermath|reinforcement` — distinguishes direct
+physical participation from strategic/supporting/supernatural/etc. involvement (never flatten all into physical).
 Every node has a unique slug `id`. Never use Neo4j internal ids in the API or frontend.
 If you change the model, update this section and the seed files in the same commit.
 

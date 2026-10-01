@@ -35,8 +35,13 @@ export const stylesheet: Style[] = [
   { selector: "node[type = 'Primarch']", style: { shape: "hexagon" } },
   { selector: "node[type = 'Astartes']", style: { shape: "round-rectangle" } },
   { selector: "node[type = 'Dreadnought']", style: { shape: "barrel" } },
+  { selector: "node[type = 'Custodes']", style: { shape: "pentagon" } },
+  { selector: "node[type = 'SistersOfSilence']", style: { shape: "rhomboid" } },
+  { selector: "node[type = 'Mechanicum']", style: { shape: "cut-rectangle" } },
+  { selector: "node[type = 'Imperialis']", style: { shape: "rectangle" } },
   { selector: "node[type = 'Legion']", style: { shape: "polygon", "shape-polygon-points": SHIELD_POINTS } },
   { selector: "node[type = 'ChaosGod']", style: { shape: "concave-hexagon" } },
+  { selector: "node[type = 'Daemon']", style: { shape: "star", "shadow-blur": 24, "shadow-color": "#b0308a", "shadow-opacity": 0.45, "shadow-offset-x": 0, "shadow-offset-y": 0 } },
   { selector: "node[type = 'Event']", style: { shape: "diamond" } },
   { selector: "node[type = 'Allegiance']", style: { shape: "tag" } },
 
@@ -89,6 +94,12 @@ export const stylesheet: Style[] = [
     style: { "line-color": "#7a4fa0", "target-arrow-color": "#7a4fa0", "line-style": "dashed", width: 2 },
   },
   { selector: "edge[type = 'SIDED_WITH']", style: { "line-color": "#3f6f63", "target-arrow-color": "#3f6f63", "line-style": "dotted" } },
+  // Participation that was not direct physical presence (directed from afar,
+  // supporting, or a warp manifestation) reads as a faint, dashed tie.
+  {
+    selector: "edge[type = 'PARTICIPATED_IN'][presence != 'physical']",
+    style: { "line-style": "dashed", "line-color": "rgba(201,162,39,0.25)", "target-arrow-color": "rgba(201,162,39,0.3)", width: 1.1 },
+  },
   { selector: "edge[type = 'SON_OF']", style: { "line-color": "rgba(230,200,110,0.7)", width: 2.2 } },
   { selector: "edge[type = 'PRIMARCH_OF']", style: { "line-color": "rgba(230,200,110,0.55)", width: 2 } },
   // Edge labels appear on hover / when incident to the selected node.

@@ -30,7 +30,7 @@ public class NodeService {
               [(n)-[r:DEVOTED_TO]->(g:ChaosGod)
                  | g {.id, .name, type: 'ChaosGod', degree: r.degree}] AS devotion,
               [(n)-[r:PARTICIPATED_IN]->(e:Event)
-                 | e {.id, .name, type: 'Event', order: e.order, side: r.side, role: r.role}]
+                 | e {.id, .name, type: 'Event', order: e.order, side: r.side, role: r.role, presence: r.presence}]
                 + [(n)-[r:FOUGHT_IN]->(e:Event)
                  | e {.id, .name, type: 'Event', order: e.order, side: r.side}] AS events,
               [(n)-[r:KILLED]->(v)

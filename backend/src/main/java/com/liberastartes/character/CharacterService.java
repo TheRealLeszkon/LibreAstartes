@@ -16,7 +16,10 @@ import com.liberastartes.node.NodeService;
 public class CharacterService {
 
     /** Subtype labels a character may carry (second label alongside :Character). */
-    private static final Set<String> ALLOWED_TYPES = Set.of("Astartes", "Dreadnought", "Primarch", "Emperor");
+    // Character subtype labels that CRUD may apply (Daemon is not a Character).
+    private static final Set<String> ALLOWED_TYPES = Set.of(
+            "Astartes", "Dreadnought", "Primarch", "Emperor",
+            "Custodes", "SistersOfSilence", "Mechanicum", "Imperialis");
 
     private final CharacterRepository repository;
     private final Neo4jClient neo4j;

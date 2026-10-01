@@ -138,54 +138,57 @@ UNWIND [
 MATCH (l {id: f[0]}), (e {id: f[1]})
 MERGE (l)-[r:FOUGHT_IN]->(e) SET r.side = f[2];
 
-// ---- PARTICIPATED_IN {side, role} : character -> event ---------------------
+// ---- PARTICIPATED_IN {side, role, presence} : character -> event -----------
+// presence ∈ physical|supporting|strategic|psychic|vision|aftermath|reinforcement.
+// Direct physical participation is NOT the same as directing a battle from afar.
 UNWIND [
-  ['the-emperor','triumph-at-ullanor','imperial','Named the Warmaster'],
-  ['the-emperor','censure-at-monarchia','imperial','Rebuked Lorgar'],
-  ['the-emperor','council-of-nikaea','imperial','Judge'],
-  ['the-emperor','boarding-vengeful-spirit','loyalist','Slew Horus'],
-  ['horus-lupercal','triumph-at-ullanor','imperial','Honoured as Warmaster'],
-  ['horus-lupercal','davin','traitor','Wounded and turned'],
-  ['horus-lupercal','isstvan-iii','traitor','Warmaster'],
-  ['horus-lupercal','siege-of-terra','traitor','Warmaster'],
-  ['horus-lupercal','boarding-vengeful-spirit','traitor','Slain by the Emperor'],
-  ['erebus','davin','traitor','Architect of the fall'],
-  ['lorgar','censure-at-monarchia','imperial','Humiliated'],
-  ['lorgar','battle-of-calth','traitor','Commander'],
-  ['angron','battle-of-calth','traitor','Shadow Crusade'],
-  ['kor-phaeron','battle-of-calth','traitor','Commander'],
-  ['remus-ventanus','battle-of-calth','loyalist','Defender'],
-  ['telemechrus','battle-of-calth','loyalist','Newly interred'],
-  ['magnus-the-red','council-of-nikaea','imperial','Defendant'],
-  ['magnus-the-red','burning-of-prospero','traitor','Defender of Prospero'],
-  ['leman-russ','burning-of-prospero','loyalist','Executioner of the censure'],
-  ['garviel-loken','isstvan-iii','loyalist','Left for dead'],
-  ['tarik-torgaddon','isstvan-iii','loyalist','Slain'],
-  ['horus-aximand','isstvan-iii','traitor','Slew Torgaddon'],
-  ['saul-tarvitz','isstvan-iii','loyalist','Warned the loyal'],
-  ['ancient-rylanor','isstvan-iii','loyalist','Self-sacrifice'],
-  ['ferrus-manus','isstvan-v','loyalist','Slain'],
-  ['fulgrim','isstvan-v','traitor','Slew Ferrus Manus'],
-  ['vulkan','isstvan-v','loyalist','Survivor'],
-  ['corvus-corax','isstvan-v','loyalist','Survivor'],
-  ['shadrak-meduson','isstvan-v','loyalist','Survivor'],
-  ['sanguinius','signus-campaign','loyalist','Ensnared'],
-  ['azkaellon','signus-campaign','loyalist','Sanguinary Guard'],
-  ['raldoron','signus-campaign','loyalist','Chapter Master'],
-  ['perturabo','battle-of-phall','traitor','Commander'],
-  ['rogal-dorn','battle-of-phall','loyalist','Commander'],
-  ['lion-eljonson','thramas-crusade','loyalist','Commander'],
-  ['konrad-curze','thramas-crusade','traitor','Commander'],
-  ['jago-sevatarion','thramas-crusade','traitor','First Captain'],
-  ['rogal-dorn','siege-of-terra','loyalist','Praetorian of Terra'],
-  ['sigismund','siege-of-terra','loyalist','Champion'],
-  ['jaghatai-khan','siege-of-terra','loyalist','Defender'],
-  ['sanguinius','siege-of-terra','loyalist','Defender'],
-  ['ezekyle-abaddon','siege-of-terra','traitor','First Captain'],
-  ['sanguinius','boarding-vengeful-spirit','loyalist','Slain by Horus']
+  ['the-emperor','triumph-at-ullanor','imperial','Named the Warmaster','physical'],
+  ['the-emperor','censure-at-monarchia','imperial','Rebuked Lorgar','physical'],
+  ['the-emperor','council-of-nikaea','imperial','Judge','physical'],
+  ['the-emperor','boarding-vengeful-spirit','loyalist','Slew Horus','physical'],
+  ['horus-lupercal','triumph-at-ullanor','imperial','Honoured as Warmaster','physical'],
+  ['horus-lupercal','davin','traitor','Wounded and turned','physical'],
+  ['horus-lupercal','isstvan-iii','traitor','Warmaster','physical'],
+  ['horus-lupercal','siege-of-terra','traitor','Warmaster','physical'],
+  ['horus-lupercal','boarding-vengeful-spirit','traitor','Slain by the Emperor','physical'],
+  ['erebus','davin','traitor','Architect of the fall','physical'],
+  ['lorgar','censure-at-monarchia','imperial','Humiliated','physical'],
+  ['lorgar','battle-of-calth','traitor','Commander','physical'],
+  ['angron','battle-of-calth','traitor','Shadow Crusade','supporting'],
+  ['kor-phaeron','battle-of-calth','traitor','Commander','physical'],
+  ['remus-ventanus','battle-of-calth','loyalist','Defender','physical'],
+  ['telemechrus','battle-of-calth','loyalist','Newly interred','physical'],
+  ['magnus-the-red','council-of-nikaea','imperial','Defendant','physical'],
+  ['magnus-the-red','burning-of-prospero','traitor','Defender of Prospero','physical'],
+  ['leman-russ','burning-of-prospero','loyalist','Executioner of the censure','physical'],
+  ['garviel-loken','isstvan-iii','loyalist','Left for dead','physical'],
+  ['tarik-torgaddon','isstvan-iii','loyalist','Slain','physical'],
+  ['horus-aximand','isstvan-iii','traitor','Slew Torgaddon','physical'],
+  ['saul-tarvitz','isstvan-iii','loyalist','Warned the loyal','physical'],
+  ['ancient-rylanor','isstvan-iii','loyalist','Self-sacrifice','physical'],
+  ['ferrus-manus','isstvan-v','loyalist','Slain','physical'],
+  ['fulgrim','isstvan-v','traitor','Slew Ferrus Manus','physical'],
+  ['vulkan','isstvan-v','loyalist','Survivor','physical'],
+  ['corvus-corax','isstvan-v','loyalist','Survivor','physical'],
+  ['shadrak-meduson','isstvan-v','loyalist','Survivor','physical'],
+  ['sanguinius','signus-campaign','loyalist','Ensnared','physical'],
+  ['azkaellon','signus-campaign','loyalist','Sanguinary Guard','physical'],
+  ['raldoron','signus-campaign','loyalist','Chapter Master','physical'],
+  ['perturabo','battle-of-phall','traitor','Commander','physical'],
+  // §15: Dorn issued the retribution order but was not physically at Phall.
+  ['rogal-dorn','battle-of-phall','loyalist','Ordered the Retribution Fleet','strategic'],
+  ['lion-eljonson','thramas-crusade','loyalist','Commander','physical'],
+  ['konrad-curze','thramas-crusade','traitor','Commander','physical'],
+  ['jago-sevatarion','thramas-crusade','traitor','First Captain','physical'],
+  ['rogal-dorn','siege-of-terra','loyalist','Praetorian of Terra','physical'],
+  ['sigismund','siege-of-terra','loyalist','Champion','physical'],
+  ['jaghatai-khan','siege-of-terra','loyalist','Defender','physical'],
+  ['sanguinius','siege-of-terra','loyalist','Defender','physical'],
+  ['ezekyle-abaddon','siege-of-terra','traitor','First Captain','physical'],
+  ['sanguinius','boarding-vengeful-spirit','loyalist','Slain by Horus','physical']
 ] AS p
 MATCH (c {id: p[0]}), (e {id: p[1]})
-MERGE (c)-[r:PARTICIPATED_IN]->(e) SET r.side = p[2], r.role = p[3];
+MERGE (c)-[r:PARTICIPATED_IN]->(e) SET r.side = p[2], r.role = p[3], r.presence = p[4];
 
 // ---- KILLED {event} : character -> character -------------------------------
 UNWIND [
@@ -221,7 +224,11 @@ MATCH (a {id: r[0]}), (b {id: r[1]})
 MERGE (a)-[:MENTOR_OF]->(b);
 
 // ---- PART_OF : event -> event ----------------------------------------------
-MATCH (a {id: 'boarding-vengeful-spirit'}), (b {id: 'siege-of-terra'})
+// The Siege of Terra is an umbrella over its phase battles.
+UNWIND [
+  'solar-war','lions-gate','saturnine','eternity-gate','inner-palace','boarding-vengeful-spirit'
+] AS phase
+MATCH (a {id: phase}), (b {id: 'siege-of-terra'})
 MERGE (a)-[:PART_OF]->(b);
 
 // ---- Additional / corrected connections ------------------------------------
@@ -230,17 +237,23 @@ MERGE (a)-[:PART_OF]->(b);
 MATCH (l {id: 'ultramarines'}), (e {id: 'censure-at-monarchia'})
 MERGE (l)-[r:FOUGHT_IN]->(e) SET r.side = 'imperial';
 
+// §15 correction: Guilliman commanded the Ullanor *Crusade* but did NOT attend
+// the Triumph ceremony — any such edge is removed.
+MATCH (:Character {id: 'roboute-guilliman'})-[r:PARTICIPATED_IN]->(:Event {id: 'triumph-at-ullanor'})
+DELETE r;
+
 UNWIND [
-  ['roboute-guilliman','triumph-at-ullanor','imperial','Honoured among the primarchs'],
-  ['roboute-guilliman','censure-at-monarchia','imperial','Razed Monarchia at the Emperor\'s command'],
-  ['roboute-guilliman','battle-of-calth','loyalist','Lord of Ultramar'],
-  ['mortarion','isstvan-iii','traitor','Purged his own loyal sons'],
-  ['mortarion','siege-of-terra','traitor','Warlord of the Death Guard'],
-  ['angron','isstvan-iii','traitor','Led the red slaughter'],
-  ['alpharius','isstvan-v','traitor','Among the reserve that turned']
+  ['roboute-guilliman','censure-at-monarchia','imperial','Razed Monarchia at the Emperor\'s command','physical'],
+  ['roboute-guilliman','battle-of-calth','loyalist','Lord of Ultramar','physical'],
+  // §13: Guilliman marched for Terra but arrived only after the Siege was decided.
+  ['roboute-guilliman','siege-of-terra','loyalist','Marching to relieve Terra','reinforcement'],
+  ['mortarion','isstvan-iii','traitor','Purged his own loyal sons','physical'],
+  ['mortarion','siege-of-terra','traitor','Warlord of the Death Guard','physical'],
+  ['angron','isstvan-iii','traitor','Led the red slaughter','physical'],
+  ['alpharius','isstvan-v','traitor','Among the reserve that turned','physical']
 ] AS p
 MATCH (c {id: p[0]}), (e {id: p[1]})
-MERGE (c)-[r:PARTICIPATED_IN]->(e) SET r.side = p[2], r.role = p[3];
+MERGE (c)-[r:PARTICIPATED_IN]->(e) SET r.side = p[2], r.role = p[3], r.presence = p[4];
 
 // The humiliation at Monarchia set Lorgar against Guilliman for all time — a
 // hatred that later fell upon Ultramar at Calth.

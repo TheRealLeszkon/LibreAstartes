@@ -102,6 +102,11 @@ export default function DetailsPanel({ details, loading, open, onClose, onNaviga
                         — {[r.role, r.side].filter(Boolean).join(", ")}
                       </span>
                     )}
+                    {r.presence && r.presence !== "physical" && (
+                      <span className="presence-tag" title="Not direct physical participation">
+                        {r.presence}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -177,7 +177,8 @@ UNWIND [
   ['zephon','signus-campaign','loyalist','Sanguinary Guard']
 ] AS p
 MATCH (c {id: p[0]}), (e {id: p[1]})
-MERGE (c)-[r:PARTICIPATED_IN]->(e) SET r.side = p[2], r.role = p[3];
+// Every participant in this expansion batch was physically present at their event.
+MERGE (c)-[r:PARTICIPATED_IN]->(e) SET r.side = p[2], r.role = p[3], r.presence = 'physical';
 
 // ---- Bonds: ALLY_OF / MENTOR_OF / RIVAL_OF --------------------------------
 UNWIND [
