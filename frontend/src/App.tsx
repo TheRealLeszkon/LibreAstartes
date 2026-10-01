@@ -3,6 +3,7 @@ import { api } from "./api/client";
 import type { GraphResponse, NodeDetails } from "./api/types";
 import GraphView from "./graph/GraphView";
 import DetailsPanel from "./panel/DetailsPanel";
+import LegionsTab from "./legions/LegionsTab";
 
 type Tab = "codex" | "legions";
 
@@ -17,7 +18,9 @@ function mergeGraph(base: GraphResponse, extra: GraphResponse): GraphResponse {
 }
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>("codex");
+  const [tab, setTab] = useState<Tab>(() =>
+    new URLSearchParams(window.location.search).get("tab") === "legions" ? "legions" : "codex",
+  );
   const [graph, setGraph] = useState<GraphResponse | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(
     () => new URLSearchParams(window.location.search).get("node"),
@@ -25,12 +28,25 @@ export default function App() {
   const [details, setDetails] = useState<NodeDetails | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [layoutNonce, setLayoutNonce] = useState(0);
+  const [legionId, setLegionId] = useState<string | null>(
+    () => new URLSearchParams(window.location.search).get("legion"),
+  );
+  const [legionGraph, setLegionGraph] = useState<GraphResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const detailReq = useRef(0);
 
   useEffect(() => {
     api.graph().then(setGraph).catch((e) => setError(String(e)));
   }, []);
+
+  // Fetch the legion subgraph when a legion is chosen on the Legions tab.
+  useEffect(() => {
+    if (!legionId) {
+      setLegionGraph(null);
+      return;
+    }
+    api.legionGraph(legionId).then(setLegionGraph).catch((e) => setError(String(e)));
+  }, [legionId]);
 
   // Fetch details whenever the selection changes.
   useEffect(() => {
@@ -62,6 +78,11 @@ export default function App() {
 
   const handleSelect = useCallback((id: string) => setSelectedId(id), []);
   const handleClose = useCallback(() => setSelectedId(null), []);
+  const handleSelectLegion = useCallback((id: string) => setLegionId(id), []);
+  const handleLegionBack = useCallback(() => {
+    setLegionId(null);
+    setSelectedId(null);
+  }, []);
 
   const handleExpand = useCallback(() => {
     if (!selectedId) return;
@@ -100,7 +121,16 @@ export default function App() {
             layoutNonce={layoutNonce}
           />
         ) : (
-          <div className="placeholder">The Legions muster here — raised in a later rite.</div>
+          <LegionsTab
+            graph={graph}
+            legionId={legionId}
+            legionGraph={legionGraph}
+            onSelectLegion={handleSelectLegion}
+            onBack={handleLegionBack}
+            onSelectNode={handleSelect}
+            selectedId={selectedId}
+            layoutNonce={layoutNonce}
+          />
         )}
 
         <DetailsPanel
