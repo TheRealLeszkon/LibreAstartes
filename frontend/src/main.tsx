@@ -5,6 +5,7 @@ import "./theme/theme.css";
 import "./app.css";
 import "./panel/panel.css";
 import "./legions/legions.css";
+import "./filters/filters.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

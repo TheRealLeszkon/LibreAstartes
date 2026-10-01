@@ -1,11 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api/client";
-import type { GraphResponse, NodeDetails } from "./api/types";
+import type { FilterOptions, GraphResponse, NodeDetails } from "./api/types";
 import GraphView from "./graph/GraphView";
 import DetailsPanel from "./panel/DetailsPanel";
 import LegionsTab from "./legions/LegionsTab";
-
-type Tab = "codex" | "legions";
+import FilterRail from "./filters/FilterRail";
+import { useUrlState } from "./filters/useUrlState";
+import {
+  EMPTY_FILTERS,
+  parseFilters,
+  toServerFilters,
+  writeFilters,
+  type FilterState,
+} from "./filters/filterState";
 
 /** Merge extra elements into a graph, de-duplicated by id. */
 function mergeGraph(base: GraphResponse, extra: GraphResponse): GraphResponse {
@@ -18,37 +25,65 @@ function mergeGraph(base: GraphResponse, extra: GraphResponse): GraphResponse {
 }
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>(() =>
-    new URLSearchParams(window.location.search).get("tab") === "legions" ? "legions" : "codex",
-  );
-  const [graph, setGraph] = useState<GraphResponse | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(
-    () => new URLSearchParams(window.location.search).get("node"),
-  );
+  const { params, update } = useUrlState();
+
+  // All view state derives from the URL (shareable).
+  const tab = params.get("tab") === "legions" ? "legions" : "codex";
+  const selectedId = params.get("node");
+  const legionId = params.get("legion");
+  const filters = useMemo(() => parseFilters(params), [params.toString()]);
+  const serverKey = JSON.stringify(toServerFilters(filters));
+
+  const [options, setOptions] = useState<FilterOptions | null>(null);
+  const [fullGraph, setFullGraph] = useState<GraphResponse | null>(null);
+  const [baseGraph, setBaseGraph] = useState<GraphResponse | null>(null);
+  const [legionGraph, setLegionGraph] = useState<GraphResponse | null>(null);
+  const [hoodGraph, setHoodGraph] = useState<GraphResponse | null>(null);
   const [details, setDetails] = useState<NodeDetails | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [layoutNonce, setLayoutNonce] = useState(0);
-  const [legionId, setLegionId] = useState<string | null>(
-    () => new URLSearchParams(window.location.search).get("legion"),
-  );
-  const [legionGraph, setLegionGraph] = useState<GraphResponse | null>(null);
+  const [railCollapsed, setRailCollapsed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const detailReq = useRef(0);
 
   useEffect(() => {
-    api.graph().then(setGraph).catch((e) => setError(String(e)));
+    api.filters().then(setOptions).catch((e) => setError(String(e)));
+    // Unfiltered full graph: drives the Legions muster cards and hotspot mapping.
+    api.graph().then(setFullGraph).catch((e) => setError(String(e)));
   }, []);
 
-  // Fetch the legion subgraph when a legion is chosen on the Legions tab.
+  // Codex graph — debounced on the server-side filters.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      api.graph(toServerFilters(filters)).then(setBaseGraph).catch((e) => setError(String(e)));
+    }, 250);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverKey]);
+
+  // Legion subgraph — same filters, debounced.
   useEffect(() => {
     if (!legionId) {
       setLegionGraph(null);
       return;
     }
-    api.legionGraph(legionId).then(setLegionGraph).catch((e) => setError(String(e)));
-  }, [legionId]);
+    const t = setTimeout(() => {
+      api.legionGraph(legionId, toServerFilters(filters)).then(setLegionGraph).catch((e) => setError(String(e)));
+    }, 250);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [legionId, serverKey]);
 
-  // Fetch details whenever the selection changes.
+  // Neighbourhood of selected (depth 1–2).
+  useEffect(() => {
+    if (filters.hood > 0 && selectedId) {
+      api.neighbours(selectedId, filters.hood).then(setHoodGraph).catch((e) => setError(String(e)));
+    } else {
+      setHoodGraph(null);
+    }
+  }, [filters.hood, selectedId]);
+
+  // Details for the selected node.
   useEffect(() => {
     if (!selectedId) {
       setDetails(null);
@@ -58,39 +93,49 @@ export default function App() {
     setDetailsLoading(true);
     api
       .node(selectedId)
-      .then((d) => {
-        if (req === detailReq.current) setDetails(d);
-      })
+      .then((d) => req === detailReq.current && setDetails(d))
       .catch((e) => setError(String(e)))
-      .finally(() => {
-        if (req === detailReq.current) setDetailsLoading(false);
-      });
+      .finally(() => req === detailReq.current && setDetailsLoading(false));
   }, [selectedId]);
 
   // Esc closes the panel.
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSelectedId(null);
-    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && update((p) => p.delete("node"));
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [update]);
 
-  const handleSelect = useCallback((id: string) => setSelectedId(id), []);
-  const handleClose = useCallback(() => setSelectedId(null), []);
-  const handleSelectLegion = useCallback((id: string) => setLegionId(id), []);
-  const handleLegionBack = useCallback(() => {
-    setLegionId(null);
-    setSelectedId(null);
-  }, []);
+  const setTab = (t: "codex" | "legions") =>
+    update((p) => (t === "legions" ? p.set("tab", "legions") : p.delete("tab")));
+  const selectNode = useCallback((id: string) => update((p) => p.set("node", id)), [update]);
+  const closeNode = useCallback(() => update((p) => p.delete("node")), [update]);
+  const selectLegion = useCallback((id: string) => update((p) => p.set("legion", id)), [update]);
+  const legionBack = useCallback(
+    () => update((p) => {
+      p.delete("legion");
+      p.delete("node");
+    }),
+    [update],
+  );
 
-  const handleExpand = useCallback(() => {
+  const onFilterChange = useCallback(
+    (patch: Partial<FilterState>) =>
+      update((p) => writeFilters(p, { ...parseFilters(p), ...patch })),
+    [update],
+  );
+  const onReset = useCallback(() => update((p) => writeFilters(p, EMPTY_FILTERS)), [update]);
+
+  const onExpand = useCallback(() => {
     if (!selectedId) return;
     api.neighbours(selectedId, 1).then((nb) => {
-      setGraph((g) => (g ? mergeGraph(g, nb) : nb));
+      setBaseGraph((g) => (g ? mergeGraph(g, nb) : nb));
       setLayoutNonce((n) => n + 1);
     });
   }, [selectedId]);
+
+  const useHood = filters.hood > 0 && selectedId && hoodGraph;
+  const codexGraph = useHood ? hoodGraph : baseGraph;
+  const shownLegionGraph = useHood ? hoodGraph : legionGraph;
 
   return (
     <div className="app">
@@ -112,24 +157,27 @@ export default function App() {
 
       <main className="stage">
         {error && <div className="error-banner">Failed to reach the archive: {error}</div>}
+
         {tab === "codex" ? (
           <GraphView
-            graph={graph}
+            graph={codexGraph}
             selectedId={selectedId}
-            onSelectNode={handleSelect}
-            onBackgroundTap={handleClose}
+            onSelectNode={selectNode}
+            onBackgroundTap={closeNode}
             layoutNonce={layoutNonce}
+            search={filters.q}
           />
         ) : (
           <LegionsTab
-            graph={graph}
+            graph={fullGraph}
             legionId={legionId}
-            legionGraph={legionGraph}
-            onSelectLegion={handleSelectLegion}
-            onBack={handleLegionBack}
-            onSelectNode={handleSelect}
+            legionGraph={shownLegionGraph}
+            onSelectLegion={selectLegion}
+            onBack={legionBack}
+            onSelectNode={selectNode}
             selectedId={selectedId}
             layoutNonce={layoutNonce}
+            search={filters.q}
           />
         )}
 
@@ -137,9 +185,19 @@ export default function App() {
           details={details}
           loading={detailsLoading}
           open={Boolean(selectedId)}
-          onClose={handleClose}
-          onNavigate={handleSelect}
-          onExpand={handleExpand}
+          onClose={closeNode}
+          onNavigate={selectNode}
+          onExpand={onExpand}
+        />
+
+        <FilterRail
+          options={options}
+          filters={filters}
+          onChange={onFilterChange}
+          onReset={onReset}
+          collapsed={railCollapsed}
+          onToggleCollapse={() => setRailCollapsed((c) => !c)}
+          legionLocked={tab === "legions" && Boolean(legionId)}
         />
       </main>
     </div>

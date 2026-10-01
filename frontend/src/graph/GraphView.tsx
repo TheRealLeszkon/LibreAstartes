@@ -20,6 +20,8 @@ interface GraphViewProps {
   onBackgroundTap?: () => void;
   /** Bumping this re-runs the layout (e.g. after "expand connections"). */
   layoutNonce?: number;
+  /** Search term: matching nodes are highlighted and focused, others dimmed. */
+  search?: string;
 }
 
 export default function GraphView({
@@ -28,6 +30,7 @@ export default function GraphView({
   onSelectNode,
   onBackgroundTap,
   layoutNonce = 0,
+  search = "",
 }: GraphViewProps) {
   const fontsReady = useFontsReady();
   const cyRef = useRef<Core | null>(null);
@@ -89,6 +92,28 @@ export default function GraphView({
       }
     }
   }, [selectedId, elementsKey]);
+
+  // Search: highlight matching nodes, dim the rest, focus the matches.
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    const q = search.trim().toLowerCase();
+    cy.batch(() => {
+      cy.elements().removeClass("search-hit search-dim");
+      if (q) {
+        const hits = cy.nodes().filter((n) => String(n.data("name") ?? "").toLowerCase().includes(q));
+        if (hits.nonempty()) {
+          cy.elements().addClass("search-dim");
+          hits.removeClass("search-dim").addClass("search-hit");
+          hits.connectedEdges().removeClass("search-dim");
+        }
+      }
+    });
+    if (q) {
+      const hits = cy.nodes().filter((n) => String(n.data("name") ?? "").toLowerCase().includes(q));
+      if (hits.nonempty()) cy.animate({ fit: { eles: hits, padding: 140 }, duration: 400, easing: "ease-out" });
+    }
+  }, [search, elementsKey]);
 
   const registerCy = (cy: Core) => {
     cyRef.current = cy;

@@ -14,6 +14,7 @@ interface LegionsTabProps {
   onSelectNode: (id: string) => void;
   selectedId: string | null;
   layoutNonce: number;
+  search?: string;
 }
 
 export default function LegionsTab({
@@ -25,6 +26,7 @@ export default function LegionsTab({
   onSelectNode,
   selectedId,
   layoutNonce,
+  search = "",
 }: LegionsTabProps) {
   const editing = new URLSearchParams(window.location.search).get("editHotspots") === "1";
   const [hasImage, setHasImage] = useState<boolean | null>(null);
@@ -62,6 +64,7 @@ export default function LegionsTab({
             onSelectNode={onSelectNode}
             onBackgroundTap={() => undefined}
             layoutNonce={layoutNonce}
+            search={search}
           />
         </div>
       </div>

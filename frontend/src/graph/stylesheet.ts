@@ -72,6 +72,8 @@ export const stylesheet: Style[] = [
   { selector: "node.faded", style: { opacity: 0.12 } },
   { selector: "edge.faded", style: { opacity: 0.05 } },
   { selector: "node.highlight", style: { "border-color": "#e6c86e", "border-width": 5 } },
+  { selector: "node.search-hit", style: { "border-color": "#f4ecd5", "border-width": 6 } },
+  { selector: ".search-dim", style: { opacity: 0.1 } },
 
   /* ---- edges ---- */
   {
